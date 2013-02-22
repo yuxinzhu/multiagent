@@ -29,8 +29,8 @@ deeper pacLeft D
 """
 
 evaluation: """
-A 4
-B 3
-C 2
-D 1000
+A 4.0
+B 3.0
+C 2.0
+D 1000.0
 """

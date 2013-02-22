@@ -25,7 +25,7 @@ min2 right C
 """
 
 evaluation: """
-A 10
-B 10
-C 0
+A 10.0
+B 10.0
+C 0.0
 """

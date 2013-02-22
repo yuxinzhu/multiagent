@@ -36,13 +36,13 @@ exp3 Right I
 """
 
 evaluation: """
-A 3
-B 12
-C 9
-D 2
-E 4
-F 6
-G 15
-H 6
-I 0
+A 3.0
+B 12.0
+C 9.0
+D 2.0
+E 4.0
+F 6.0
+G 15.0
+H 6.0
+I 0.0
 """

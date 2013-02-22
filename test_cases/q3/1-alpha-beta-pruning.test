@@ -38,13 +38,13 @@ min3 Right I
 
 
 evaluation: """
-A 3
-B 12
-C 8
-D 5
-E 4
-F 6
-G 14
-H 1
-I 11
+A 3.0
+B 12.0
+C 8.0
+D 5.0
+E 4.0
+F 6.0
+G 14.0
+H 1.0
+I 11.0
 """
