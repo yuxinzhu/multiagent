@@ -16,6 +16,9 @@ import os
 import re
 import sys
 import projectParams
+import random
+from util import FixedRandom
+random.setstate(FixedRandom().random.getstate())
 
 # register arguments and set default values
 def readCommand(argv):
@@ -239,7 +242,7 @@ def evaluate(generateSolutions, testRoot, moduleDict, exceptionMap=ERROR_HINT_MA
             if testDict.get("disabled", "false").lower() == "true":
                 continue
             testClass = getattr(projectTestClasses, testDict['class'])
-            testCase = testClass(testDict)
+            testCase = testClass(question, testDict)
             def makefun(testCase, solution_file):
                 if generateSolutions:
                     # write solution file to disk

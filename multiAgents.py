@@ -4,7 +4,7 @@
 # project. You are free to use and extend these projects for educational
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and Pieter 
+# Student side autograding was added by Brad Miller, Nick Hay, and Pieter
 # Abbeel in Spring 2013.
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
 
@@ -163,12 +163,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         # def minimax(state, depth, index):
         #   if depth = 0 or state.isLose():
-        #     print "evaluate leaves"     
+        #     print "evaluate leaves"
         #     return
         #   else:
         #     val = float("-inf")
         #     for _ in state.getNumAgents():
-        #       val = 
+        #       val =
         #       for action in legalMoves:
         #         val = max(val, -minimax(action, depth-1, index%state.getNumAgents()))
         #       return val

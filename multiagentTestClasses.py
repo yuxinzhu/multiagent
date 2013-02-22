@@ -109,7 +109,7 @@ def parseTreeProblem(testDict):
         tokens = line.split()
         if len(tokens) == 2:
             state, value = tokens
-            evaluation[state] = int(value)
+            evaluation[state] = float(value)
         else:
             raise Exception, "[parseTree] Bad evaluation line: |%s|" % (line,)
 
@@ -285,8 +285,8 @@ class PolyAgent(Agent):
   
 class PacmanGameTreeTest(testClasses.TestCase):
 
-    def __init__(self, testDict):
-        super(PacmanGameTreeTest, self).__init__(testDict)
+    def __init__(self, question, testDict):
+        super(PacmanGameTreeTest, self).__init__(question, testDict)
         self.seed = int(self.testDict['seed'])
         self.alg = self.testDict['alg']
         self.layout_text = self.testDict['layout']
@@ -366,8 +366,8 @@ class PacmanGameTreeTest(testClasses.TestCase):
 
 class GraphGameTreeTest(testClasses.TestCase):
 
-    def __init__(self, testDict):
-        super(GraphGameTreeTest, self).__init__(testDict)
+    def __init__(self, question, testDict):
+        super(GraphGameTreeTest, self).__init__(question, testDict)
         self.problem = parseTreeProblem(testDict)
         self.alg = self.testDict['alg']
         self.diagram = self.testDict['diagram'].split('\n')
@@ -393,12 +393,12 @@ class GraphGameTreeTest(testClasses.TestCase):
         
         fail = False
         if action != goldAction:
-            self.addMessage('Incorrect move')
+            self.addMessage('Incorrect move for depth=%s' % (self.depth,))
             self.addMessage('    Student move: %s\n    Optimal move: %s' % (action, goldAction))
             fail = True
         
         if expanded != goldExpanded:
-            self.addMessage('Incorrect expanded nodes')
+            self.addMessage('Incorrect expanded nodes for depth=%s' % (self.depth,))
             self.addMessage('    Student expanded nodes: %s\n    Correct expanded nodes: %s' % (expanded, goldExpanded))
             fail = True
         
@@ -424,8 +424,8 @@ from util import TimeoutFunction
    
 class EvalAgentTest(testClasses.TestCase):
 
-    def __init__(self, testDict):
-        super(EvalAgentTest, self).__init__(testDict)
+    def __init__(self, question, testDict):
+        super(EvalAgentTest, self).__init__(question, testDict)
         self.layoutName = testDict['layoutName']
         self.agentName = testDict['agentName']
         self.ghosts = eval(testDict['ghosts'])

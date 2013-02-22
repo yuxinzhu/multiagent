@@ -106,6 +106,16 @@ class PartialCreditQuestion(Question):
             
 
 
+class NumberPassedQuestion(Question):
+    """Grade is the number of test cases passed."""
+
+    def execute(self, grades):
+        grades.addPoints([f(grades) for _, f in self.testCases].count(True))
+
+
+
+
+
 # Template modeling a generic test case 
 class TestCase(object):
     
@@ -116,7 +126,8 @@ class TestCase(object):
     def getPath(self):
         return self.path
 
-    def __init__(self, testDict):
+    def __init__(self, question, testDict):
+        self.question = question
         self.testDict = testDict
         self.path = testDict['path']
         self.messages = []
