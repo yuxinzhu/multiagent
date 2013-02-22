@@ -129,36 +129,45 @@ class MinimaxAgent(MultiAgentSearchAgent):
         def value(state, index, depth):
           # print("index = " + str(index)+ " depth = " + str(depth))
           index = index%state.getNumAgents()
-          if state.isLose() or depth == 0:
-            # print("EVALUATING LEAVES")
+          print(index, depth)
+          if state.isLose() or state.isWin() or depth == 0:
+            print("EVALUATING LEAVES")
             #evaluate the leaves
-            return self.evaluationFunction(state)
+            a = self.evaluationFunction(state)
+            #print(a)
+            return a
             # bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
             # chosenIndex = random.choice(bestIndices)
             # return legalMoves[chosenIndex]
           if index%state.getNumAgents()==0:
-            return max_val(state, index, depth)
-          return min_val(state, index, depth)
+            return max_val(state, index, depth-1)
+          return min_val(state, index, depth-1)
 
         def max_val(state, index, depth):
           val = float("-inf")
           legalActions = state.getLegalActions(index)
+          if len(legalActions)==0:
+            return value(state,index,0)
           succState = [state.generateSuccessor(index, x) for x in legalActions]
           for each in succState:
-            val = max(val, value(each, index+1, depth-1))
+            val = max(val, value(each, index+1, depth))
           return val
 
         def min_val(state, index, depth):
           val = float("inf")
           legalActions = state.getLegalActions(index)
+          if len(legalActions)==0:
+            return value(state,index,0)
           succState = [state.generateSuccessor(index, x) for x in legalActions]
           for each in succState:
-            val = min(val, value(each, index+1, depth-1))
+            val = min(val, value(each, index+1, depth))
           return val
 
         print ("self.depth = " + str(self.depth))
+        print ("agent#s = " + str(gameState.getNumAgents()))
         print (gameState.isLose())
-        return value(gameState,0, self.depth*gameState.getNumAgents())
+        actions = gameState.getLegalActions
+        return value(gameState,0, (self.depth*gameState.getNumAgents()))
 
 
         # def minimax(state, depth, index):
