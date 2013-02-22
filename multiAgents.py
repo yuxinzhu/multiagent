@@ -227,6 +227,57 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        
+        def maximizer(state, depth, a, b):
+          if state.isLose() or state.isWin() or depth == 0:
+            #evaluate the leaves
+            return self.evaluationFunction(state)    
+          val = float("-inf")
+          legalActions = state.getLegalActions()
+          succState = [state.generateSuccessor(0,x) for x in legalActions]
+          for each in succState:
+            val = max(val, minimizer(each, depth, state.getNumAgents()-1, a, b))
+            if val > b:
+              return val
+            a = max(a, val)
+          return val
+
+
+        def minimizer(state, depth, index, a, b):
+          if state.isLose() or state.isWin() or depth == 0:
+            #evaluate the leaves
+            return self.evaluationFunction(state)          
+          val = float("inf")
+          legalActions = state.getLegalActions(index)
+          succState = [state.generateSuccessor(index, x) for x in legalActions]
+          for each in succState:
+            if index > 1:
+              val = min(val, minimizer(each, depth, index-1, a, b))
+            else:
+              val = min(val, maximizer(each, depth-1, a, b))
+            if val < a:
+              return val
+            b = min(b, val)
+          return val
+
+          
+        legalActions = gameState.getLegalActions()
+        move = Directions.STOP
+        val = float("-inf")
+        a = float("-inf")
+        b = float("inf")
+        for action in legalActions:
+          tmp = minimizer(gameState.generateSuccessor(0,action), self.depth, gameState.getNumAgents()-1, a, b)
+          if tmp>val:
+            val = tmp
+            move = action
+          if val > b:
+            return value
+          a = max(a,val)
+        return move
+
+
+
         util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
