@@ -71,17 +71,12 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-        foodDistance = self.foodDistance(newPos, newFood)
-        minFoodDistance = min(foodDistance) if foodDistance else 1000
-        avgFoodDistance = sum(foodDistance)/float(len(foodDistance)) if foodDistance else 0
-        avgFoodDistance = 1 if not avgFoodDistance else avgFoodDistance
+
         minGhostDistance = self.minGhostDistance(newPos, newGhostStates)
-        minGhostDistance = 1 if not minGhostDistance else minGhostDistance
-        getGhostScore = self.getGhostScore(newPos, newGhostStates)
-        getGhostScore = 1 if not getGhostScore else getGhostScore
-        a = successorGameState.getScore() if successorGameState.getScore() else 1
-        # print a
-        return 2.0/minGhostDistance + a + self.surroundingFood(newPos, newFood) + 10.0/avgFoodDistance
+        score = successorGameState.getScore()
+        surroundingFood = self.surroundingFood(newPos, newFood)
+        avgFoodDistance = self.avgFoodDistance(newPos, newFood)
+        return 2.0/minGhostDistance + score + surroundingFood + 10.0/avgFoodDistance
 
     def countRemainingFood(self, newFood):
         return sum([len(filter(lambda y: y, x)) for x in newFood])
@@ -96,13 +91,14 @@ class ReflexAgent(Agent):
             #     return -10*approachingGhosts
         return sum(distances)
 
-    def foodDistance(self, newPos, newFood):
+    def avgFoodDistance(self, newPos, newFood):
         distances = []
         for x, row in enumerate(newFood):
             for y, column in enumerate(newFood[x]):
                 if newFood[x][y]:
                     distances.append(manhattanDistance(newPos, (x,y)))
-        return distances
+        avgDistance = sum(distances)/float(len(distances)) if (distances and sum(distances) != 0) else 1
+        return avgDistance
 
     def surroundingFood(self, newPos, newFood):
         count = 0
@@ -117,7 +113,9 @@ class ReflexAgent(Agent):
         for ghostState in newGhostStates:
             ghostCoordinate = ghostState.getPosition()
             distances.append(manhattanDistance(newPos, ghostCoordinate))
-        return min(distances)
+        if distances and min(distances) != 0:
+            return min(distances)
+        return 1
 
 def manhattanDistance(xy1, xy2):
     "Returns the Manhattan distance between points xy1 and xy2"
@@ -280,15 +278,67 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             move = action
         return move
 
+
+def countRemainingFood(newFood):
+    return sum([len(filter(lambda y: y, x)) for x in newFood])
+
+def getGhostScore(newPos, newGhostStates):
+    total, distances = 0, []
+    for ghostState in newGhostStates:
+        ghostCoordinate = ghostState.getPosition()
+        distances.append(manhattanDistance(newPos, ghostCoordinate))
+        # approachingGhosts = len(filter(lambda x: x < 5, distances))
+        # if approachingGhosts:
+        #     return -10*approachingGhosts
+    return sum(distances)
+
+def avgFoodDistance(newPos, newFood):
+    distances = []
+    for x, row in enumerate(newFood):
+        for y, column in enumerate(newFood[x]):
+            if newFood[x][y]:
+                distances.append(manhattanDistance(newPos, (x,y)))
+    avgDistance = sum(distances)/float(len(distances)) if (distances and sum(distances) != 0) else 1
+    return avgDistance
+
+def surroundingFood(newPos, newFood):
+    count = 0
+    for x in range(newPos[0]-2, newPos[0]+2):
+        for y in range(newPos[1]-2, newPos[1]+2):
+            if (0 <= x and x < len(list(newFood))) and (0 <= y and y < len(list(newFood[1]))) and newFood[x][y]:
+                count += 1
+    return count
+
+def minGhostDistance(newPos, newGhostStates):
+    distances = []
+    for ghostState in newGhostStates:
+        ghostCoordinate = ghostState.getPosition()
+        distances.append(manhattanDistance(newPos, ghostCoordinate))
+    if distances and min(distances) != 0:
+        return min(distances)
+    return 1
+
 def betterEvaluationFunction(currentGameState):
     """
-      Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-      evaluation function (question 5).
+        Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
+        evaluation function (question 5).
 
-      DESCRIPTION: <write something here so we know what you did>
+        DESCRIPTION: betterEvalulationFunction consists primarily of four features:
+        1) The inverse of the distance to the closest ghost
+        2) The current score
+        3) The number of food pellets surrounding Pacman within 2 on each direction
+        4) The inverse of the average distance to all food pellets
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currentPos = currentGameState.getPacmanPosition()
+    currentFood = currentGameState.getFood()
+    currentGhostStates = currentGameState.getGhostStates()
+
+    score = currentGameState.getScore()
+    return (
+        2.0/minGhostDistance(currentPos, currentGhostStates) + score +
+        surroundingFood(currentPos, currentFood) + 10.0/avgFoodDistance(currentPos, currentFood)
+    )
 
 # Abbreviation
 better = betterEvaluationFunction
