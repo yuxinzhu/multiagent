@@ -36,6 +36,8 @@ class ReflexAgent(Agent):
         """
         # Collect legal moves and successor states
         legalMoves = gameState.getLegalActions()
+        if "Stop" in legalMoves:
+            legalMoves.remove("Stop")
 
         # Choose one of the best actions
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
@@ -64,13 +66,62 @@ class ReflexAgent(Agent):
         """
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
+        # print "successorGameState: " + str(successorGameState)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        foodDistance = self.foodDistance(newPos, newFood)
+        minFoodDistance = min(foodDistance) if foodDistance else 1000
+        avgFoodDistance = sum(foodDistance)/float(len(foodDistance)) if foodDistance else 0
+        avgFoodDistance = 1 if not avgFoodDistance else avgFoodDistance
+        minGhostDistance = self.minGhostDistance(newPos, newGhostStates)
+        minGhostDistance = 1 if not minGhostDistance else minGhostDistance
+        getGhostScore = self.getGhostScore(newPos, newGhostStates)
+        getGhostScore = 1 if not getGhostScore else getGhostScore
+        a = successorGameState.getScore() if successorGameState.getScore() else 1
+        # print a
+        return 2.0/minGhostDistance + a + self.surroundingFood(newPos, newFood) + 10.0/avgFoodDistance
 
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+    def countRemainingFood(self, newFood):
+        return sum([len(filter(lambda y: y, x)) for x in newFood])
+
+    def getGhostScore(self, newPos, newGhostStates):
+        total, distances = 0, []
+        for ghostState in newGhostStates:
+            ghostCoordinate = ghostState.getPosition()
+            distances.append(manhattanDistance(newPos, ghostCoordinate))
+            # approachingGhosts = len(filter(lambda x: x < 5, distances))
+            # if approachingGhosts:
+            #     return -10*approachingGhosts
+        return sum(distances)
+
+    def foodDistance(self, newPos, newFood):
+        distances = []
+        for x, row in enumerate(newFood):
+            for y, column in enumerate(newFood[x]):
+                if newFood[x][y]:
+                    distances.append(manhattanDistance(newPos, (x,y)))
+        return distances
+
+    def surroundingFood(self, newPos, newFood):
+        count = 0
+        for x in range(newPos[0]-2, newPos[0]+2):
+            for y in range(newPos[1]-2, newPos[1]+2):
+                if (0 <= x and x < len(list(newFood))) and (0 <= y and y < len(list(newFood[1]))) and newFood[x][y]:
+                    count += 1
+        return count
+
+    def minGhostDistance(self, newPos, newGhostStates):
+        distances = []
+        for ghostState in newGhostStates:
+            ghostCoordinate = ghostState.getPosition()
+            distances.append(manhattanDistance(newPos, ghostCoordinate))
+        return min(distances)
+
+def manhattanDistance(xy1, xy2):
+    "Returns the Manhattan distance between points xy1 and xy2"
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 def scoreEvaluationFunction(currentGameState):
     """
