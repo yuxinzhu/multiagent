@@ -66,7 +66,6 @@ class ReflexAgent(Agent):
         """
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
-        # print "successorGameState: " + str(successorGameState)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
@@ -77,19 +76,6 @@ class ReflexAgent(Agent):
         surroundingFood = self.surroundingFood(newPos, newFood)
         avgFoodDistance = self.avgFoodDistance(newPos, newFood)
         return 2.0/minGhostDistance + score + surroundingFood + 10.0/avgFoodDistance
-
-    def countRemainingFood(self, newFood):
-        return sum([len(filter(lambda y: y, x)) for x in newFood])
-
-    def getGhostScore(self, newPos, newGhostStates):
-        total, distances = 0, []
-        for ghostState in newGhostStates:
-            ghostCoordinate = ghostState.getPosition()
-            distances.append(manhattanDistance(newPos, ghostCoordinate))
-            # approachingGhosts = len(filter(lambda x: x < 5, distances))
-            # if approachingGhosts:
-            #     return -10*approachingGhosts
-        return sum(distances)
 
     def avgFoodDistance(self, newPos, newFood):
         distances = []
@@ -102,8 +88,8 @@ class ReflexAgent(Agent):
 
     def surroundingFood(self, newPos, newFood):
         count = 0
-        for x in range(newPos[0]-2, newPos[0]+2):
-            for y in range(newPos[1]-2, newPos[1]+2):
+        for x in range(newPos[0]-2, newPos[0]+3):
+            for y in range(newPos[1]-2, newPos[1]+3):
                 if (0 <= x and x < len(list(newFood))) and (0 <= y and y < len(list(newFood[1]))) and newFood[x][y]:
                     count += 1
         return count
@@ -303,8 +289,8 @@ def avgFoodDistance(newPos, newFood):
 
 def surroundingFood(newPos, newFood):
     count = 0
-    for x in range(newPos[0]-2, newPos[0]+2):
-        for y in range(newPos[1]-2, newPos[1]+2):
+    for x in range(newPos[0]-2, newPos[0]+3):
+        for y in range(newPos[1]-2, newPos[1]+3):
             if (0 <= x and x < len(list(newFood))) and (0 <= y and y < len(list(newFood[1]))) and newFood[x][y]:
                 count += 1
     return count
@@ -329,14 +315,12 @@ def betterEvaluationFunction(currentGameState):
         3) The number of food pellets surrounding Pacman within 2 on each direction
         4) The inverse of the average distance to all food pellets
     """
-    "*** YOUR CODE HERE ***"
     currentPos = currentGameState.getPacmanPosition()
     currentFood = currentGameState.getFood()
     currentGhostStates = currentGameState.getGhostStates()
 
-    score = currentGameState.getScore()
     return (
-        2.0/minGhostDistance(currentPos, currentGhostStates) + score +
+        2.0/minGhostDistance(currentPos, currentGhostStates) + currentGameState.getScore() +
         surroundingFood(currentPos, currentFood) + 10.0/avgFoodDistance(currentPos, currentFood)
     )
 
