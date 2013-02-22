@@ -176,80 +176,46 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+  
 
-        def value(state, index, depth):
-          # print("index = " + str(index)+ " depth = " + str(depth))
-          index = index%state.getNumAgents()
-          print(index, depth)
+        def maximizer(state, depth=0):
           if state.isLose() or state.isWin() or depth == 0:
-            print("EVALUATING LEAVES")
             #evaluate the leaves
-            a = self.evaluationFunction(state)
-            #print(a)
-            return a
-            # bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-            # chosenIndex = random.choice(bestIndices)
-            # return legalMoves[chosenIndex]
-          if index%state.getNumAgents()==0:
-            return max_val(state, index, depth-1)
-          return min_val(state, index, depth-1)
-
-        def max_val(state, index, depth):
+            return self.evaluationFunction(state)    
           val = float("-inf")
-          legalActions = state.getLegalActions(index)
-          if len(legalActions)==0:
-            return value(state,index,0)
-          succState = [state.generateSuccessor(index, x) for x in legalActions]
+          legalActions = state.getLegalActions()
+          succState = [state.generateSuccessor(0,x) for x in legalActions]
           for each in succState:
-            val = max(val, value(each, index+1, depth))
+            val = max(val, minimizer(each, depth, state.getNumAgents()-1))
           return val
 
-        def min_val(state, index, depth):
+
+        def minimizer(state, depth=0, index=0):
+          if state.isLose() or state.isWin() or depth == 0:
+            #evaluate the leaves
+            return self.evaluationFunction(state)          
           val = float("inf")
           legalActions = state.getLegalActions(index)
-          if len(legalActions)==0:
-            return value(state,index,0)
           succState = [state.generateSuccessor(index, x) for x in legalActions]
           for each in succState:
-            val = min(val, value(each, index+1, depth))
+            if index > 1:
+              val = min(val, minimizer(each, depth, index-1))
+            else:
+              val = min(val, maximizer(each, depth-1))
           return val
 
-        print ("self.depth = " + str(self.depth))
-        print ("agent#s = " + str(gameState.getNumAgents()))
-        print (gameState.isLose())
-        actions = gameState.getLegalActions
-        return value(gameState,0, (self.depth*gameState.getNumAgents()))
+          
+        legalActions = gameState.getLegalActions()
+        move = Directions.STOP
+        val = float("-inf")
+        for action in legalActions:
+          tmp = minimizer(gameState.generateSuccessor(0,action), self.depth, gameState.getNumAgents()-1)
+          if tmp>val:
+            val = tmp
+            move = action 
+        return move
 
 
-        # def minimax(state, depth, index):
-        #   if depth = 0 or state.isLose():
-        #     print "evaluate leaves"
-        #     return
-        #   else:
-        #     val = float("-inf")
-        #     for _ in state.getNumAgents():
-        #       val =
-        #       for action in legalMoves:
-        #         val = max(val, -minimax(action, depth-1, index%state.getNumAgents()))
-        #       return val
-        # return minimax(gameState, self.depth*gameState.getNumAgents(), 0)
-        # return minimax(gameState,self.depth*gameState.getNumAgents())
-        util.raiseNotDefined()
-
-        # print("number of agents = " + str(gameState.getNumAgents()))
-        # legalMoves = gameState.getLegalActions()
-        # scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
-        # bestScore = max(scores)
-        # bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-        # chosenIndex = random.choice(bestIndices)
-        # def maxvalue(state):
-        #   v = float("-inf")
-        #   x = gameState.generateSuccessor(0,)
-        #   return v
-        # def minvalue(state):
-        #   v = float("inf")
-        #   return v
-        # util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
